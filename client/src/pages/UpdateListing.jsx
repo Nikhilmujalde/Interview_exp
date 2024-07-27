@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
 import { app } from '../firebase'
 import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-const CreateListing = () => {
+import { useNavigate ,useParams} from 'react-router-dom'
+const UpdateListing = () => {
     const navigate = useNavigate()
     const [files, setfiles] = useState([])
     const [formData, setformData] = useState({
@@ -21,12 +21,38 @@ const CreateListing = () => {
         rounds:1,
         selected:false
     })
+
     // console.log(formData)
     const { currentUser } = useSelector(state => state.user)
     const [uploading, setuploading] = useState(false)
     const [imageUploadError, setimageUploadError] = useState(false)
     const [loading, setloading] = useState(false)
     const [error, seterror] = useState(false)
+    const params = useParams()
+    useEffect(() => {
+        const fetchListing = async()=>{
+            const listingId = params.listingId
+            // console.log(ListingId)
+            try {
+                const res = await fetch(`/api/listing/getListing/${listingId}`)
+                if (!res.ok) {
+                    throw new Error('Failed to fetch listing')
+                }
+                const data = await res.json()
+                const formattedData = {
+                    ...data,
+                    interviewDate: new Date(data.interviewDate).toISOString().split('T')[0]
+                  };
+                setformData(formattedData)
+            } catch (error) {
+                console.error('Error fetching listing:', error)
+                seterror('Failed to fetch listing')
+            }
+            // setformData(data)
+        }
+
+        fetchListing()
+    }, [])
     const handleImageSubmit = async (e) => {
         if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
             setuploading(true)
@@ -105,26 +131,35 @@ const CreateListing = () => {
             })
         }
     }
-    const handleSubmit=async(e)=>{
+    const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            if(formData.imageUrls.length < 1) return seterror('You must upload at least one image')
-            if(+formData.ctc < +formData.base) return seterror('Base cannot be greater than CTC')
+            if (formData.imageUrls.length < 1) return seterror('You must upload at least one image')
+            if (+formData.regularPrice < +formData.discountPrice) return seterror('Discount cannot be greater than regular Price')
             setloading(true)
             seterror(false)
-            const res = await fetch('/api/listing/create', {
-                method: 'POST',
+
+            const res = await fetch(`/api/listing/edit/${params.listingId}`, {
+                method: 'PUT', // Use the correct HTTP method
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...formData,
                     userRef: currentUser._id,
                 })
-              })
+            })
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(`Failed to update listing: ${res.status} - ${errorText}`);
+            }
+
             const data = await res.json()
             setloading(false)
-            if(data.success === false){
+
+            if (data.success === false) {
                 seterror(data.message)
             }
+
             navigate(`/listing/${data._id}`)
         } catch (error) {
             seterror(error.message)
@@ -134,7 +169,7 @@ const CreateListing = () => {
     return (
 
         <div className='p-3 max-w-4xl mx-auto'>
-            <h1 className='font-semibold text-center text-3xl my-7'>Create a Experience</h1>
+            <h1 className='font-semibold text-center text-3xl my-7'>Update a Experience</h1>
             <form onSubmit={handleSubmit} action="" className='flex flex-col sm:flex-row gap-4'>
                 <div className="flex flex-col gap-4 flex-1">
                     <input type="text" placeholder='Company Name' onChange={handleChange} value={formData.companyName} className='border p-3 rounded-lg' id='companyName' maxLength='62' minLength='1' required />
@@ -226,7 +261,7 @@ const CreateListing = () => {
 
                         ))
                     }
-                    <button disabled={loading || uploading} className='p-3 mt-4 bg-slate-700 text-white rounded-lg uppercase hover:opacity-90 disabled:opacity-80'>{loading? 'Creating...': 'Create Experience'}</button>
+                    <button disabled={loading || uploading} className='p-3 mt-4 bg-slate-700 text-white rounded-lg uppercase hover:opacity-90 disabled:opacity-80'>{loading? 'Updating...': 'Update Experience'}</button>
                     {error && <p className='text-red-700 text-sm'>{error}</p>}
                 </div>
             </form>
@@ -235,4 +270,4 @@ const CreateListing = () => {
     )
 }
 
-export default CreateListing
+export default UpdateListing

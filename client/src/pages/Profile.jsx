@@ -50,7 +50,7 @@ const Profile = () => {
 			},
 		);
 	}
-	
+
 	const handleChange = (e) => {
 		setformData({ ...formData, [e.target.id]: e.target.value })
 	}
@@ -72,21 +72,21 @@ const Profile = () => {
 				return;
 				// return
 			}
-				dispatch(updateUserSuccess(data))
-				setupdateSucces(true)
+			dispatch(updateUserSuccess(data))
+			setupdateSucces(true)
 		} catch (error) {
 			dispatch(updateUserFailure(error.message))
 		}
 	}
 
-	const handleDelete=async()=>{
+	const handleDelete = async () => {
 		try {
 			dispatch(deleteUserStart())
 			const res = await fetch(`/api/user/delete/${currentUser._id}`, {
 				method: 'DELETE',
 			})
 			const data = await res.json()
-			if(data.success === false){
+			if (data.success === false) {
 				dispatch(deleteUserFailure(data.message))
 				return;
 			}
@@ -95,12 +95,12 @@ const Profile = () => {
 			dispatch(deleteUserFailure(error.message))
 		}
 	}
-	const handleSignOut=async()=>{
+	const handleSignOut = async () => {
 		try {
 			dispatch(signOutUserStart())
 			const res = await fetch('/api/auth/signout')
 			const data = await res.json()
-			if(data.success === false){
+			if (data.success === false) {
 				dispatch(signOutUserFailure(data.message))
 				return;
 			}
@@ -109,19 +109,34 @@ const Profile = () => {
 			dispatch(signOutUserFailure(error))
 		}
 	}
-	const handleShowListing=async()=>{
+	const handleShowListing = async () => {
 		try {
 			setshowListingError(false)
 			const res = await fetch(`/api/user/listings/${currentUser._id}`)
 			console.log('we are here')
 			const data = await res.json()
 			console.log(data)
-			if(data.success === false){
+			if (data.success === false) {
 				setshowListingError(true)
 			}
 			setuserListing(data)
 		} catch (error) {
 			showListingError(true)
+		}
+	}
+	const handleListingDelete = async (listingid) => {
+		try {
+			const res = await fetch(`/api/listing/delete/${listingid}`,
+				{ method: 'DELETE' }
+			)
+			const data = await res.json()
+			if (data.success === false) {
+				console.log(data.message)
+				return
+			}
+			setuserListing((prev) => prev.filter((listing) => listing._id !== listingid))
+		} catch (error) {
+			console.log(error)
 		}
 	}
 	return (
@@ -151,27 +166,29 @@ const Profile = () => {
 				<span onClick={handleDelete} className='text-red-700 cursor-pointer'>Delete Account</span>
 				<span onClick={handleSignOut} className='text-red-700 cursor-pointer'>Sign Out</span>
 			</div>
-			<p className='text-red-700 mt-5'>{error?error:""}</p>
-			<p className='text-green-700 mt-5'>{updateSucces?'User is updated successfully':""}</p>
-			<button onClick={handleShowListing} className='text-green-700 w-full'>Show Listings</button>
-			<p>{showListingError?'Error showing listing':""}</p>
+			<p className='text-red-700 mt-5'>{error ? error : ""}</p>
+			<p className='text-green-700 mt-5'>{updateSucces ? 'User is updated successfully' : ""}</p>
+			<button onClick={handleShowListing} className='text-green-700 w-full'>Show Shared Experience</button>
+			<p>{showListingError ? 'Error showing listing' : ""}</p>
 			{userListing && userListing.length > 0 &&
-			<div className="flex flex-col gap-4">
-				<h1 className='text-center mt-7 text-2xl font-semibold'>Your listings</h1>
-			{userListing.map((listing) =>
-				<div className='border rounded-lg p-3 flex gap-4 justify-between items-center' key={listing._id}>
-					<Link to={`/listing/${listing._id}`}>
-						<img src={listing.imageUrls[0]} alt="listing image"  className='h-16 w-16 object-contain '/>
-					</Link>
-					<Link className='flex-1 font-semibold hover:underline truncate' to={`/listing/${listing._id}`}>
-						<p className=' '>{`${listing.companyName},  ${listing.intervieweeName}`}</p>
-					</Link>
-					<div className="flex flex-col items-center">
-						<button className='text-red-700 uppercase'>Delete</button>
-						<button className='text-green-700 uppercase'>edit</button>
-					</div>
-				</div>)}
-			</div>
+				<div className="flex flex-col gap-4">
+					<h1 className='text-center mt-7 text-2xl font-semibold'>Your Experiences</h1>
+					{userListing.map((listing) =>
+						<div className='border rounded-lg p-3 flex gap-4 justify-between items-center' key={listing._id}>
+							<Link to={`/listing/${listing._id}`}>
+								<img src={listing.imageUrls[0]} alt="listing image" className='h-16 w-16 object-contain ' />
+							</Link>
+							<Link className='flex-1 font-semibold hover:underline truncate' to={`/listing/${listing._id}`}>
+								<p className=' '>{`${listing.companyName},  ${listing.intervieweeName}`}</p>
+							</Link>
+							<div className="flex flex-col items-center">
+								<button onClick={() => handleListingDelete(listing._id)} className='text-red-700 uppercase'>Delete</button>
+								<Link to={`/update-listing/${listing._id}`}>
+						<button  className='text-green-700 uppercase'>edit</button>
+						</Link>
+							</div>
+						</div>)}
+				</div>
 
 			}
 		</div>
