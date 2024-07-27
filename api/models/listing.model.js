@@ -8,13 +8,13 @@ const listingSchema  = new mongoose.Schema({
         type: String,
         required: true
       },
+      intervieweeName: {
+        type: String,
+        required: true
+    },
       interviewDate: {
         type: Date,
         required: true
-      },
-      rounds:{
-        type:Number,
-        required:true
       },
       description:{
         type:String,
@@ -28,6 +28,22 @@ const listingSchema  = new mongoose.Schema({
         type: String,
         required: false
       },
+      ctc:{
+        type:Number,
+        required:true
+      },
+      base:{
+        type:Number,
+        required:true
+      },
+      rounds:{
+        type:Number,
+        required:true
+      },
+      selected: {
+        type: Boolean,
+        required: true
+      },
       imageUrls:{
         type:Array,
         required:true,
@@ -36,6 +52,8 @@ const listingSchema  = new mongoose.Schema({
         type:String,
         required:true,
     },
+   
+  
     },{timestamps:true}
 );
 

@@ -1,0 +1,217 @@
+import React, { useState } from 'react'
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
+import { app } from '../firebase'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+const CreateListing = () => {
+    const navigate = useNavigate()
+    const [files, setfiles] = useState([])
+    const [formData, setformData] = useState({
+        imageUrls: [],
+        companyName:'',
+        jobTitle:'',
+        intervieweeName:'',
+        interviewDate:'',
+        description:'',
+        overallExperience:'',
+        tips:'',
+        ctc:1,
+        base:1,
+        rounds:1,
+        selected:false
+    })
+    // console.log(formData)
+    const { currentUser } = useSelector(state => state.user)
+    const [uploading, setuploading] = useState(false)
+    const [imageUploadError, setimageUploadError] = useState(false)
+    const [loading, setloading] = useState(false)
+    const [error, seterror] = useState(false)
+    const handleImageSubmit = async (e) => {
+        if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
+            setuploading(true)
+            setimageUploadError(false)
+            const promises = []
+            for (let i = 0; i < files.length; i++) {
+                promises.push(storeImage(files[i]))
+            }
+            Promise.all(promises).then((urls) => {
+                setformData({
+                    ...formData, imageUrls: formData.imageUrls.concat(urls),
+                })
+                setimageUploadError(false)
+                setuploading(false)
+            }).catch((error) => {
+                setuploading(false)
+                setimageUploadError('2mb max per image')
+            })
+            // now we want to keep the previous form data so that it can be saved and then viewed by others
+        }
+        else {
+            setimageUploadError('You can only upload only 6 images per listing')
+            setuploading(false)
+        }
+        // setuploading(false)
+    }
+    const storeImage = async (file) => {
+        return new Promise((resolve, reject) => {
+            const storage = getStorage(app)
+            const fileName = new Date().getTime() + file.name
+            const storageRef = ref(storage, fileName)
+            const uploadTask = uploadBytesResumable(storageRef, file)
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                    // console.log('Upload is ' + progress + "%done");
+                    console.log(Math.round(progress))
+                },
+                (error) => {
+                    reject(error)
+                },
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref).then(
+                        (downloadUrl) => {
+                            resolve(downloadUrl)
+                        }
+                    )
+                },
+            );
+        })
+    }
+    const handleImageDelete = (index) => {
+        setformData({
+            ...formData,
+            imageUrls: formData.imageUrls.filter((_, i) => i !== index)
+        })
+    }
+
+    const handleChange=(e)=>{
+        if(e.target.id === 'selected'){
+            setformData({
+                ...formData,
+                [e.target.id]:e.target.checked
+            })
+        }
+        if(e.target.type === 'text' || e.target.type === 'number' || e.target.type === 'textarea' || e.target.type === 'date'){
+            setformData({
+                ...formData,
+                [e.target.id]:e.target.value
+            })
+        }
+    }
+    const handleSubmit=async(e)=>{
+        e.preventDefault()
+        try {
+            if(formData.imageUrls.length < 1) return seterror('You must upload at least one image')
+            if(+formData.ctc < +formData.base) return seterror('Base cannot be greater than CTC')
+            setloading(true)
+            seterror(false)
+            const res = await fetch('/api/listing/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...formData,
+                    userRef: currentUser._id,
+                })
+              })
+            const data = await res.json()
+            setloading(false)
+            if(data.success === false){
+                seterror(data.message)
+            }
+            navigate(`/listing/${data._id}`)
+        } catch (error) {
+            seterror(error.message)
+            setloading(false)
+        }
+    }
+    return (
+
+        <div className='p-3 max-w-4xl mx-auto'>
+            <h1 className='font-semibold text-center text-3xl my-7'>Create a Experience</h1>
+            <form onSubmit={handleSubmit} action="" className='flex flex-col sm:flex-row gap-4'>
+                <div className="flex flex-col gap-4 flex-1">
+                    <input type="text" placeholder='Company Name' onChange={handleChange} value={formData.companyName} className='border p-3 rounded-lg' id='companyName' maxLength='62' minLength='1' required />
+                    <input type="text" placeholder='Job Title' onChange={handleChange} value={formData.jobTitle} className='border p-3 rounded-lg' id='jobTitle' required />
+                    <input type="text" placeholder='Interview Name' onChange={handleChange} value={formData.intervieweeName} className='border p-3 rounded-lg' id='intervieweeName' required />
+                    <input type="date" className='border p-3 rounded-lg' id='interviewDate' onChange={handleChange} value={formData.interviewDate} required />
+
+                    <textarea type="text" placeholder='description' onChange={handleChange} value={formData.description} className='border p-3 rounded-lg' id="description" minLength={10} required />
+                    <textarea type="text" placeholder='overallExperience' onChange={handleChange} value={formData.overallExperience} className='border p-3 rounded-lg' id='overallExperience' required />
+                    <textarea type="text" placeholder='tips' className='border p-3 rounded-lg' onChange={handleChange} value={formData.tips} id='tips' required />
+                    <div className="flex flex-wrap gap-6">
+                        <div className="flex items-center gap-4">
+                            <input
+                                type="number"
+                                id="ctc"
+                                min={1}
+                                max={1000}
+                                required
+                                onChange={handleChange} value={formData.ctc}
+                                className="p-3 border border-gray-400 rounded-lg"
+                            />
+                            <span className="text-lg">CTC in lpa</span>
+                            <input
+                                type="number"
+                                id="base"
+                                min={1}
+                                max={1000}
+                                required
+                                onChange={handleChange} value={formData.base}
+                                className="p-3 border border-gray-400 rounded-lg"
+                            />
+                            <span className="text-lg">Base in lpa</span>
+                            
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <input
+                                type="number"
+                                id="rounds"
+                                min={1}
+                                max={10}
+                                required
+                                onChange={handleChange} value={formData.rounds}
+                                className="p-3 border border-gray-400 rounded-lg"
+                            />
+                            <span className="text-lg">No. of Rounds</span>
+                            <input
+                                type="checkbox"
+                                onChange={handleChange}
+                                checked={formData.selected}
+                                id="selected"
+                                className="w-6 h-6" 
+                            />
+                            <span className="text-lg">Selected</span> 
+                            
+                        </div>
+                        
+                    </div>
+
+                </div>
+                <div className='flex flex-col flex-1'>
+                    <p className='font-semibold'>Images:
+                        <span className='font-normal text-gray-600 ml-2'>The first image will be cover</span>
+                    </p>
+                    <div className="flex gap-4">
+                        <input onChange={(e) => setfiles(e.target.files)} className='p-3 border border-gray-300 rounded w-full' type="file" id='images' accept='image/*' multiple />
+                        <button type='button' disabled={uploading} onClick={handleImageSubmit} className='p-3 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-90'>{uploading ? 'Uploading...' : 'Upload'}</button>
+                    </div>
+                    <p className='text-red-700 text-sm'>{imageUploadError && imageUploadError}</p>
+                    {
+                        formData.imageUrls.length > 0 && formData.imageUrls.map((url, index) => (
+                            <div key={url} className="flex justify-between p-3 border items-center">
+                                <img src={url} alt="listing image" className='w-20 h-29 object-contain rounded-lg' />
+                                <button type='button' onClick={() => handleImageDelete(index)} className='p-3 rounded-lg uppercase hover:opacity-90 text-red-700'>Delete</button>
+                            </div>
+
+                        ))
+                    }
+                    <button disabled={loading || uploading} className='p-3 mt-4 bg-slate-700 text-white rounded-lg uppercase hover:opacity-90 disabled:opacity-80'>{loading? 'Creating...': 'Create Experience'}</button>
+                    {error && <p className='text-red-700 text-sm'>{error}</p>}
+                </div>
+            </form>
+        </div>
+
+    )
+}
+
+export default CreateListing
