@@ -53,7 +53,7 @@ const Profile = () => {
 	}
 	const handleSubmit = async (e) => {
 		e.preventDefault()
-		console.log('Before', loading)
+		// console.log('Before', loading)
 		try {
 			dispatch(updateUserStart())
 			// console.log()

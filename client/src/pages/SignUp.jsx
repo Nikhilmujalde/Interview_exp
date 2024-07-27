@@ -12,6 +12,7 @@ const SignUp = () => {
   const navigate = useNavigate()
   const handleChange = (e) => {
     // setformData({})
+    // we are using spread operator to keep the previous info and adding new ones
     setformData({
       ...formData,
       [e.target.id]: e.target.value

@@ -9,6 +9,7 @@ export const signup = async (req,res,next)=>{
     const {username,email,password} = req.body;
     // we will get the info when the user logs in 
     const hashedPassword = bcrypt.hashSync(password,10);
+    // this are the parameters used in our model if they are the same no need to write again but hashed is diff
     const newUser = new User({username,email,password:hashedPassword})
     try {
         await newUser.save()
@@ -26,6 +27,7 @@ export const signin = async (req,res,next)=>{
         const validPassword = bcrypt.compareSync(password,validUser.password)
         if(!validPassword) return next(errorHandler(401,'Wrong Credentials'))
             // creating a token for a cookie so that we can save the user info inside the browser
+        // we are using _id to create a unique token because it is unique for every user and anyone cannot deduce anything from it 
         const token = jwt.sign({id:validUser._id},process.env.JWT_SECRET)
         // doing this because we don't want to send the password so we just extract the password
         const {password:pass,...rest} = validUser._doc
