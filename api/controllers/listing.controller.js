@@ -60,3 +60,51 @@ export const getListing=async(req,res,next)=>{
         next(error)
     }
 }
+
+export const getListings=async(req,res,next)=>{
+    try {
+        // now what we are doing here is lets say our url is api/listing/get?limit=2
+        // so we will get limit as 2 say just rent and furnished or if it is not given then 9
+        const limit = parseInt(req.query.limit) || 9
+        const startIndex = parseInt(req.query.startIndex) || 0
+        // let selected = req.query.selected
+        // if(selected === undefined || selected === 'false'){
+        //     selected = {$in:[false,true]}
+        // }
+
+
+        let type = req.query.type
+
+        if(type === undefined || type === 'all'){
+            type = {$in:['full-time','intern','fullintern']}
+        }
+
+        const searchTerm = req.query.searchTerm || ''
+        const sort = req.query.sort || 'createdAt'
+        const order = req.query.order || 'desc'
+        console.log('Query Parameters:', {
+            limit,
+            startIndex,
+            type,
+            searchTerm,
+            sort,
+            order
+        });
+
+        // here options i means dont care about uppercase and lowercase
+        const listings = await Listing.find({
+            $or: [
+                { companyName: { $regex: searchTerm, $options: 'i' } },
+                { jobTitle: { $regex: searchTerm, $options: 'i' } }
+            ], 
+            type,
+        }).sort(
+            {[sort]:order}
+        ).limit(limit).skip(startIndex)
+        console.log('Listings Found:', listings);
+        return res.status(200).json(listings)
+
+    } catch (error) {
+        next(error)
+    }
+}   
