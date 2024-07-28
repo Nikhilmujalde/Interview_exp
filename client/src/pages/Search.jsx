@@ -170,7 +170,7 @@ const Search = () => {
             <button className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-90'>Search</button>
         </form>
       </div>
-      <div className="right flex-1 ">
+      {/* <div className="right flex-1 ">
       <h1 className='text-3xl font-semibold border-b p-3 text-slate-700 mt-5'>Listing results</h1>
                 <div className="p-7 flex flex-wrap gap-4 ">
                     {!loading && listings.length === 0 && (
@@ -188,7 +188,25 @@ const Search = () => {
                     )
                     }
                 </div>
-      </div>
+      </div> */}
+      <div className="right flex-1">
+  <h1 className='text-3xl font-semibold border-b p-3 text-slate-700 mt-5'>Listing results</h1>
+  <div className="p-7 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {!loading && listings.length === 0 && (
+      <p className='text-xl text-slate-700 text-center'>No listing found</p>
+    )}
+    {loading && (
+      <p className='text-xl text-slate-700 text-center w-full'>Loading...</p>
+    )}
+    {!loading && listings && listings.map((listing) => (
+      <Listingitem key={listing._id} listing={listing} />
+    ))}
+    {showMore && (
+      <button className='text-green-700 hover:underline p-7 text-center w-full' onClick={onShowMoreClick}>Show More</button>
+    )}
+  </div>
+</div>
+
     </div>
   )
 }
