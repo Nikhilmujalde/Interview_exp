@@ -14,6 +14,7 @@ const Search = () => {
     })
     const [loading, setloading] = useState(false)
     const [listings, setlistings] = useState([])
+    const [showMore, setshowMore] = useState(false)
     // console.log(listings)
     useEffect(() => {
 
@@ -39,9 +40,16 @@ const Search = () => {
 
         const fetchListings = async () => {
             setloading(true)
+            setshowMore(false)
             const searchQuery = urlParams.toString()
             const res = await fetch(`/api/listing/get?${searchQuery}`)
             const data = await res.json()
+            if(data.length > 8){
+                setshowMore(true)
+            }
+            else{
+                setshowMore(false)
+            }
             setlistings(data)
             setloading(false)
         }
@@ -75,15 +83,39 @@ const Search = () => {
         e.preventDefault()
         // get the info already inside the url
         const urlParams = new URLSearchParams()
-        urlParams.set('searchTerm', setsidebardata.searchTerm)
-        urlParams.set('type', setsidebardata.type)
-        // urlParams.set('selected', setsidebardata.selected)
-        urlParams.set('sort', setsidebardata.sort)
-        urlParams.set('order', setsidebardata.order)
-        const searchQuery = urlParams.toString()
+
         // console.log(urlParams)
+        if (setsidebardata.searchTerm) {
+            urlParams.set('searchTerm', setsidebardata.searchTerm);
+        }
+        if (setsidebardata.type !== 'all') {
+            urlParams.set('type', setsidebardata.type);
+        }
+
+  
+        if (setsidebardata.sort !== 'created_at' || setsidebardata.order !== 'desc') {
+            urlParams.set('sort', setsidebardata.sort);
+            urlParams.set('order', setsidebardata.order);
+        }
+      
+        const searchQuery = urlParams.toString();
         navigate(`/search?${searchQuery}`)
 
+    }
+    const onShowMoreClick=async()=>{
+        // we will fetch the data after teh listings that we are already seeing
+        const numberOfListings = listings.length
+        const startIndex = numberOfListings
+        const urlParams = new URLSearchParams(location.search)
+        urlParams.set('startIndex',startIndex)
+        const searchQuery = urlParams.toString()
+        const res = await fetch(`/api/listing/get?${searchQuery}`)
+        const data = await res.json()
+        if(data.length < 9){
+            setshowMore(false)
+
+        }
+        setlistings([...listings,...data])  
     }
   return (
     <div className='flex flex-col md:flex-row'>
@@ -150,6 +182,11 @@ const Search = () => {
                     {!loading && listings && listings.map((listing) => (
                         <Listingitem key={listing._id} listing={listing} />
                     ))}
+                    {showMore &&
+                    (
+                        <button className='text-green-700 hover:underline p-7 text-center w-full' onClick={()=>onShowMoreClick()}>Show More</button>
+                    )
+                    }
                 </div>
       </div>
     </div>

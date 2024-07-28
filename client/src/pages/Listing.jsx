@@ -103,16 +103,26 @@ export default function Listing() {
              
             </div>
 
+              {listing.type !== 'intern' &&  
               <div className='flex items-center gap-2 '>
+                           <FontAwesomeIcon icon={faWallet} className='text-green-800' />
+            <p className=' text-green-800 font-semibold'>
+             CTC: {listing.ctc} lpa
+            </p>
+            <p className=' text-green-800 font-semibold'>
+             BASE: {listing.base} lpa
+            </p>
+           
+          </div> 
+              }
+            {listing.type === 'intern' && 
+            <div className='flex items-center gap-2'>
               <FontAwesomeIcon icon={faWallet} className='text-green-800' />
               <p className=' text-green-800 font-semibold'>
-               CTC: {listing.ctc} lpa
+               Compensation: {listing.base} lakhs
               </p>
-              <p className=' text-green-800 font-semibold'>
-               BASE: {listing.base} lpa
-              </p>
-             
             </div>
+            }
             <p className=' text-green-800 font-semibold'>
                 {listing.type === 'full-time' ? 'Full-Time' : `${listing.type === 'intern' ? 'Intern':'Full-Time + Intern'}`}
               </p>
@@ -151,41 +161,19 @@ export default function Listing() {
             
   
             <p className='text-slate-800'>
-              <span className='font-semibold text-black'>Description - </span>
-              {listing.description}
+              <span className='font-semibold text-black'>Description : <br/></span>
+              <span className='formatted-text'>{listing.description}</span>
             </p>
             <p className='text-slate-800'>
-              <span className='font-semibold text-black'>overallExperience - </span>
-              {listing.overallExperience}
+              <span className='font-semibold text-black'>OverallExperience : <br/> </span>
+              <span className='formatted-text'>{listing.overallExperience}</span>
             </p>
             <p className='text-slate-800'>
-              <span className='font-semibold text-black'>tips - </span>
-              {listing.tips}
+              <span className='font-semibold text-black'>Tips : <br/> </span>
+              <span className='formatted-text'>{listing.tips}</span>
             </p>
 
-            {/* <ul className='text-green-900 font-semibold text-sm flex flex-wrap items-center gap-4 sm:gap-6'>
-              <li className='flex items-center gap-1 whitespace-nowrap '>
-                <FaBed className='text-lg' />
-                {listing.bedrooms > 1
-                  ? `${listing.bedrooms} beds `
-                  : `${listing.bedrooms} bed `}
-              </li>
-              <li className='flex items-center gap-1 whitespace-nowrap '>
-                <FaBath className='text-lg' />
-                {listing.bathrooms > 1
-                  ? `${listing.bathrooms} baths `
-                  : `${listing.bathrooms} bath `}
-              </li>
-              <li className='flex items-center gap-1 whitespace-nowrap '>
-                <FaParking className='text-lg' />
-                {listing.parking ? 'Parking spot' : 'No Parking'}
-              </li>
-              <li className='flex items-center gap-1 whitespace-nowrap '>
-                <FaChair className='text-lg' />
-                {listing.furnished ? 'Furnished' : 'Unfurnished'}
-              </li>
-            </ul> */}
-           
+
             
           </div>
         </div>

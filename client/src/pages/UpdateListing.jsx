@@ -180,7 +180,7 @@ const UpdateListing = () => {
                 <div className="flex flex-col gap-4 flex-1">
                     <input type="text" placeholder='Company Name' onChange={handleChange} value={formData.companyName} className='border p-3 rounded-lg' id='companyName' maxLength='62' minLength='1' required />
                     <input type="text" placeholder='Job Title' onChange={handleChange} value={formData.jobTitle} className='border p-3 rounded-lg' id='jobTitle' required />
-                    <input type="text" placeholder='Interview Name' onChange={handleChange} value={formData.intervieweeName} className='border p-3 rounded-lg' id='intervieweeName' required />
+                    <input type="text" placeholder='intervieweeName' onChange={handleChange} value={formData.intervieweeName} className='border p-3 rounded-lg' id='intervieweeName' required />
                     <input type="date" className='border p-3 rounded-lg' id='interviewDate' onChange={handleChange} value={formData.interviewDate} required />
                     <div className="flex gap-4">
 
@@ -200,33 +200,7 @@ const UpdateListing = () => {
                     <textarea type="text" placeholder='description' onChange={handleChange} value={formData.description} className='border p-3 rounded-lg' id="description" minLength={10} required />
                     <textarea type="text" placeholder='overallExperience' onChange={handleChange} value={formData.overallExperience} className='border p-3 rounded-lg' id='overallExperience' required />
                     <textarea type="text" placeholder='tips' className='border p-3 rounded-lg' onChange={handleChange} value={formData.tips} id='tips' required />
-                    <div className="flex flex-wrap gap-6">
-                        <div className="flex items-center gap-4">
-                            <input
-                                type="number"
-                                id="ctc"
-                                min={1}
-                                 step="0.01"
-                                max={1000}
-                                required
-                                onChange={handleChange} value={formData.ctc}
-                                className="p-3 border border-gray-400 rounded-lg"
-                            />
-                            <span className="text-lg">CTC in lpa</span>
-                            <input
-                                type="number"
-                                id="base"
-                                min={1}
-                                 step="0.01"
-                                max={1000}
-                                required
-                                onChange={handleChange} value={formData.base}
-                                className="p-3 border border-gray-400 rounded-lg"
-                            />
-                            <span className="text-lg">Base in lpa</span>
-                            
-                        </div>
-                        <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4">
                             <input
                                 type="number"
                                 id="rounds"
@@ -245,10 +219,52 @@ const UpdateListing = () => {
                                 className="w-6 h-6" 
                             />
                             <span className="text-lg">Selected</span> 
-                            
+                        </div>                   
+                        {formData.type !== 'intern' && (
+                            <div className='flex  gap-6 '>
+                                <div className="flex items-center gap-4">
+                                    <input
+                                        type="number"
+                                        id="ctc"
+                                        step="0.01"
+                                        min={1}
+                                        max={1000}
+                                        required
+                                        onChange={handleChange} value={formData.ctc}
+                                        className="p-3 border border-gray-400 rounded-lg"
+                                    />
+                                    <span className="text-lg">CTC in lpa</span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <input
+                                        type="number"
+                                        id="base"
+                                        min={1}
+                                        step="0.01"
+                                        max={1000}
+                                        required
+                                        onChange={handleChange} value={formData.base}
+                                        className="p-3 border border-gray-400 rounded-lg"
+                                    />
+                                    <span className="text-lg">Base in lpa</span>
+                                </div>
+                            </div>
+                        )}
+                        {formData.type === 'intern'  && (
+                            <div className="flex items-center gap-4">
+                            <input
+                                type="number"
+                                id="base"
+                                min={1}
+                                step="0.01"
+                                max={1000}
+                                required
+                                onChange={handleChange} value={formData.base}
+                                className="p-3 border border-gray-400 rounded-lg"
+                            />
+                            <span className="text-lg">Compensation in lakhs</span>
                         </div>
-                        
-                    </div>
+                        )}
 
                 </div>
                 <div className='flex flex-col flex-1'>
