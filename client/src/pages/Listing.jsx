@@ -120,7 +120,7 @@ export default function Listing() {
               <div className='flex items-center gap-2 '>
               <FontAwesomeIcon icon={faClipboardQuestion} className='text-green-800'/>
               <p className=' text-green-800 font-semibold'>
-                {listing.ctc} Rounds
+                {listing.rounds} Rounds
               </p>
               {
                 listing.selected && 

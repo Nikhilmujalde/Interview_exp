@@ -118,13 +118,19 @@ const UpdateListing = () => {
                 type: e.target.id
             })
         }
-        if(e.target.id === 'selected'){
+        else if(e.target.id === 'selected'){
             setformData({
                 ...formData,
                 [e.target.id]:e.target.checked
             })
         }
-        if(e.target.type === 'text' || e.target.type === 'number' || e.target.type === 'textarea' || e.target.type === 'date'){
+         else if (e.target.type === 'number' && (e.target.id === 'ctc' || e.target.id === 'base')) {
+            setformData({
+                ...formData,
+                [e.target.id]: parseFloat(e.target.value)
+            });
+        }
+        else{
             setformData({
                 ...formData,
                 [e.target.id]:e.target.value
@@ -200,6 +206,7 @@ const UpdateListing = () => {
                                 type="number"
                                 id="ctc"
                                 min={1}
+                                 step="0.01"
                                 max={1000}
                                 required
                                 onChange={handleChange} value={formData.ctc}
@@ -210,6 +217,7 @@ const UpdateListing = () => {
                                 type="number"
                                 id="base"
                                 min={1}
+                                 step="0.01"
                                 max={1000}
                                 required
                                 onChange={handleChange} value={formData.base}
