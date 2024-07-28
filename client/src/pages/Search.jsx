@@ -7,7 +7,7 @@ const Search = () => {
     const [setsidebardata, setsetsidebardata] = useState({
         searchTerm: '',
         type: 'all',
-        selected:false,
+        selected: false,
         sort: 'created_at',
         order: 'desc',
 
@@ -27,7 +27,7 @@ const Search = () => {
         const orderFromUrl = urlParams.get('order')
 
         if (
-            searchTermFromUrl || typefromUrl   || sortFromUrl || orderFromUrl
+            searchTermFromUrl || typefromUrl || sortFromUrl || orderFromUrl
         ) {
             setsetsidebardata({
                 searchTerm: searchTermFromUrl || '',
@@ -44,10 +44,10 @@ const Search = () => {
             const searchQuery = urlParams.toString()
             const res = await fetch(`/api/listing/get?${searchQuery}`)
             const data = await res.json()
-            if(data.length > 8){
+            if (data.length > 8) {
                 setshowMore(true)
             }
-            else{
+            else {
                 setshowMore(false)
             }
             setlistings(data)
@@ -92,63 +92,63 @@ const Search = () => {
             urlParams.set('type', setsidebardata.type);
         }
 
-  
+
         if (setsidebardata.sort !== 'created_at' || setsidebardata.order !== 'desc') {
             urlParams.set('sort', setsidebardata.sort);
             urlParams.set('order', setsidebardata.order);
         }
-      
+
         const searchQuery = urlParams.toString();
         navigate(`/search?${searchQuery}`)
 
     }
-    const onShowMoreClick=async()=>{
+    const onShowMoreClick = async () => {
         // we will fetch the data after teh listings that we are already seeing
         const numberOfListings = listings.length
         const startIndex = numberOfListings
         const urlParams = new URLSearchParams(location.search)
-        urlParams.set('startIndex',startIndex)
+        urlParams.set('startIndex', startIndex)
         const searchQuery = urlParams.toString()
         const res = await fetch(`/api/listing/get?${searchQuery}`)
         const data = await res.json()
-        if(data.length < 9){
+        if (data.length < 9) {
             setshowMore(false)
 
         }
-        setlistings([...listings,...data])  
+        setlistings([...listings, ...data])
     }
-  return (
-    <div className='flex flex-col md:flex-row'>
-      <div className="left p-7 border-b-2 md:border-r-2 md:min-h-screen">
-        <form onSubmit={handleSubmit} className='flex flex-col gap-8'>
-            <div className="flex items-center gap-2">
-                <label className='whitespace-nowrap font-semibold'>
-                    Search Term
-                </label>
-                <input type="text" value={setsidebardata.searchTerm} onChange={handleChange}id='searchTerm' placeholder='Search...' className='border rounded-lg p-3 w-full' />
-            </div>
-            <div className="flex gap-2 flex-wrap items-center">
-                <label className='font-semibold'>Type:</label>
+    return (
+        <div className='flex flex-col md:flex-row'>
+            <div className="left p-7 border-b-2 md:border-r-2 md:min-h-screen">
+                <form onSubmit={handleSubmit} className='flex flex-col gap-8'>
+                    <div className="flex items-center gap-2">
+                        <label className='whitespace-nowrap font-semibold'>
+                            Search Term
+                        </label>
+                        <input type="text" value={setsidebardata.searchTerm} onChange={handleChange} id='searchTerm' placeholder='Search...' className='border rounded-lg p-3 w-full' />
+                    </div>
+                    <div className="flex gap-2 flex-wrap items-center">
+                        <label className='font-semibold'>Type:</label>
 
-                <div className="flex gap-2">
-                    <input onChange={handleChange} checked={setsidebardata.type === 'all'} type="checkbox" id='all' className='w-5' />
-                    <span>All</span>
-                </div>
-                <div className="flex gap-2">
-                    <input type="checkbox" onChange={handleChange} checked={setsidebardata.type === 'fullintern'} id='fullintern' className='w-5' />
-                    <span>FTE + Intern</span>
-                </div>
-                <div className="flex gap-2">
-                    <input type="checkbox" id='full-time'onChange={handleChange} checked={setsidebardata.type === 'full-time'} className='w-5' />
-                    <span>Full Time</span>
-                </div>
-                <div className="flex gap-2">
-                    <input type="checkbox" id='intern' onChange={handleChange} checked={setsidebardata.type === 'intern'} className='w-5' />
-                    <span>Intern</span>
-                </div>
-               
-            </div>
-            {/* <div className="flex gap-2 flex-wrap items-center">
+                        <div className="flex gap-2">
+                            <input onChange={handleChange} checked={setsidebardata.type === 'all'} type="checkbox" id='all' className='w-5' />
+                            <span>All</span>
+                        </div>
+                        <div className="flex gap-2">
+                            <input type="checkbox" onChange={handleChange} checked={setsidebardata.type === 'fullintern'} id='fullintern' className='w-5' />
+                            <span>FTE + Intern</span>
+                        </div>
+                        <div className="flex gap-2">
+                            <input type="checkbox" id='full-time' onChange={handleChange} checked={setsidebardata.type === 'full-time'} className='w-5' />
+                            <span>Full Time</span>
+                        </div>
+                        <div className="flex gap-2">
+                            <input type="checkbox" id='intern' onChange={handleChange} checked={setsidebardata.type === 'intern'} className='w-5' />
+                            <span>Intern</span>
+                        </div>
+
+                    </div>
+                    {/* <div className="flex gap-2 flex-wrap items-center">
                 <label className='font-semibold'>Selected:</label>
                 <div className="flex gap-2">
                     <input type="checkbox"  id='selected' onChange={handleChange} checked={setsidebardata.selected} className='w-5' />
@@ -157,20 +157,20 @@ const Search = () => {
         
 
             </div> */}
-            <div className="flex items-center gap-2">
-                <label className='font-semibold'>
-                    Sort
-                </label>
-                <select name="" id="sort_order" onChange={handleChange} defaultValue={`created_at_desc`} className='border rounded-lg p-3'>
-                    <option value="createdAt_desc">Latest</option>
-                    <option value="createdAt_asc">Oldest</option>
-                </select>
+                    <div className="flex items-center gap-2">
+                        <label className='font-semibold'>
+                            Sort
+                        </label>
+                        <select name="" id="sort_order" onChange={handleChange} defaultValue={`created_at_desc`} className='border rounded-lg p-3'>
+                            <option value="createdAt_desc">Latest</option>
+                            <option value="createdAt_asc">Oldest</option>
+                        </select>
 
+                    </div>
+                    <button className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-90'>Search</button>
+                </form>
             </div>
-            <button className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-90'>Search</button>
-        </form>
-      </div>
-      {/* <div className="right flex-1 ">
+            {/* <div className="right flex-1 ">
       <h1 className='text-3xl font-semibold border-b p-3 text-slate-700 mt-5'>Listing results</h1>
                 <div className="p-7 flex flex-wrap gap-4 ">
                     {!loading && listings.length === 0 && (
@@ -189,26 +189,26 @@ const Search = () => {
                     }
                 </div>
       </div> */}
-      <div className="right flex-1">
-  <h1 className='text-3xl font-semibold border-b p-3 text-slate-700 mt-5'>Listing results</h1>
-  <div className="p-7 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    {!loading && listings.length === 0 && (
-      <p className='text-xl text-slate-700 text-center'>No listing found</p>
-    )}
-    {loading && (
-      <p className='text-xl text-slate-700 text-center w-full'>Loading...</p>
-    )}
-    {!loading && listings && listings.map((listing) => (
-      <Listingitem key={listing._id} listing={listing} />
-    ))}
-    {showMore && (
-      <button className='text-green-700 hover:underline p-7 text-center w-full' onClick={onShowMoreClick}>Show More</button>
-    )}
-  </div>
-</div>
+            <div className="right flex-1">
+                <h1 className='text-3xl font-semibold border-b p-3 text-slate-700 mt-5'>Listing results</h1>
+                <div className="p-7 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {!loading && listings.length === 0 && (
+                        <p className='text-xl text-slate-700 text-center'>No listing found</p>
+                    )}
+                    {loading && (
+                        <p className='text-xl text-slate-700 text-center w-full'>Loading...</p>
+                    )}
+                    {!loading && listings && listings.map((listing) => (
+                        <Listingitem key={listing._id} listing={listing} />
+                    ))}
+                    {showMore && (
+                        <button className='text-green-700 flex items-center hover:underline p-7 text-center w-full' onClick={onShowMoreClick}>Show More</button>
+                    )}
+                </div>
+            </div>
 
-    </div>
-  )
+        </div>
+    )
 }
 
 export default Search
