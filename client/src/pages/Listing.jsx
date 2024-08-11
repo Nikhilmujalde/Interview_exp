@@ -8,16 +8,7 @@ import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserTie ,faBuilding,faCalendar, faWallet, faClipboardQuestion, faCircleCheck, faCircleXmark} from '@fortawesome/free-solid-svg-icons';
 
-import {
-  FaBath,
-  FaBed,
-  FaChair,
-  FaMapMarkedAlt,
-  FaMapMarkerAlt,
-  FaParking,
-  FaShare,
-//   faUserTie
-} from 'react-icons/fa';
+
 // import Contact from './Contact.jsx';
 
 
