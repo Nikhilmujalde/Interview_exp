@@ -16,7 +16,7 @@ const Header = () => {
         }
     }, [location.search])
 
-    const handleSubmit = async (e) => {
+    const  handleSubmit = async (e) => {
         e.preventDefault()
         // jo bhi url hai usko ham fetch karenge or searchTerm mai dal denge
         const urlParams = new URLSearchParams(window.location.search)

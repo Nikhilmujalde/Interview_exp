@@ -12,6 +12,7 @@ const Oauth = () => {
             // const provider = new GoogleAuthProvider()
             
             const provider = new GoogleAuthProvider();
+            // always account selection appears
             provider.setCustomParameters({
                 prompt: 'select_account'
             });
